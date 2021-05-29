@@ -9,7 +9,7 @@ attribution: 'Map data © <a href="https://www.openstreetmap.org/">OpenStreetMap
 });
 
 // We create the tile layer that will be the background of our map.
-let streets = L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/streets-v11/tiles/{z}/{x}/{y}?access_token={accessToken}', {
+let light = L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/light-v10/tiles/{z}/{x}/{y}?access_token={accessToken}', {
   attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
     maxZoom: 18,
     //id: 'mapbox/streets-v11',
@@ -20,7 +20,7 @@ let streets = L.tileLayer('https://api.mapbox.com/styles/v1/mapbox/streets-v11/t
 
 // Create a base layer that holds both maps.
 let baseMaps = {
-  Street: streets,
+  Light: light,
   Dark: dark
 };
 
@@ -28,33 +28,38 @@ let baseMaps = {
 let map = L.map('mapid', {
   center: [30, 30],
   zoom: 2,
-  layers: [streets]
+  layers: [light]
 })
 
 // Pass our map layers into our layers control and add the layers control to the map.
 L.control.layers(baseMaps).addTo(map);
 
 // Add GeoJSON data.
-let airportData = "https://raw.githubusercontent.com/mdabbous88/Mapping_Earthquakes./main/majorAirports.json";
+let torontoData = "https://raw.githubusercontent.com/mdabbous88/Mapping_Earthquakes./main/torontoRoutes.json";
+
+
 
 // Grabbing our GeoJSON data.
-d3.json(airportData).then(function(data) {
+d3.json(torontoData).then(function(data) {
   console.log(data);
 // Creating a GeoJSON layer with the retrieved data.
 L.geoJson(data).addTo(map);
 
 
 L.geoJson(data ,{
-  // Create a style for the lines.
+// Create a style for the lines.
+
+  color: "#ffffa1",
+  weight: 2,
+
+  onEachFeature: function(feature, layer) {
+
+    layer.bindPopup("<h3>Airline:" + feature.properties.airline + "</h3> <hr> <h3>Destination:"  +feature.properties.dst+ "</h3>")
   
-    color: "#ffffa1",
-    weight: 2,
-  
-    onEachFeature: function(feature, layer) {
-  
-      layer.bindPopup("<h3>" + feature.properties.id + "</h3> <hr> <h3>"  +feature.properties.name+ "</h3>")
-    
-    }}).addTo(map);
-  
-  
-  });
+  }}).addTo(map);
+
+
+
+});
+
+
